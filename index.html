@@ -1,0 +1,185 @@
+<html>
+<head>
+	<meta charset="utf-8">
+    <link href="https://michaelma666.github.io/Resume/Michael_Resume_zh/images/logo.png" rel="icon">
+    <style type="text/css">
+        .chatBody {
+            background-color: #E8EEF3;
+            padding: 10px;
+            height: 350px;
+            overflow-y: auto;
+        }
+        ::-webkit-scrollbar  
+        {  
+            width: 6px;  
+            height: 6px;  
+            background-color: #F5F5F5;  
+        }  
+          
+        /*定义滚动条轨道 内阴影+圆角*/  
+        ::-webkit-scrollbar-track  
+        {   
+            border-radius: 10px;  
+            background-color: #F5F5F5;  
+        }  
+          
+        /*定义滑块 内阴影+圆角*/  
+        ::-webkit-scrollbar-thumb  
+        {  
+            border-radius: 10px;    
+            background-color: #123655;  
+        } 
+        .msg {
+            background-color: #DE6860;
+            border-radius: 10px;
+            padding: 5px 10px;
+            color: #FFF;
+            word-break: break-all;
+        }
+        .msgContainer {
+            margin: 20px;
+        }
+        .left {
+            text-align:left;
+        }
+        .right {
+            text-align:right;
+        }
+        .chatBox {
+            width:500px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        .chatHeader {
+            background-color: #5B6FD2;
+            padding: 10px 30px;
+            border-radius: 10px 10px 0 0;
+            color: #EEE;
+        }
+        .chatFooter {
+            background-color: #5B6FD2;
+            padding: 10px 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        input {
+            height: 30px;
+            line-height: 30px;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        #sendMsg {
+            background-color: #4D93FD;
+            cursor: pointer;
+            color: #FFF;
+            padding: 5px;
+            display: inline-block;
+            padding: 6px 26px;
+            margin-bottom: 0;
+            font-size: 14px;
+            line-height: 20px;
+            text-align: center;
+            vertical-align: middle;
+            border:0;
+        }
+        #sendMsg:hover,#sendMsg:active,#sendMsg:focus{
+            background-color: #7B8EE8;
+        }
+        #chatMessage {
+            width: 327px;
+        }
+        #clear {
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+<!--     <link rel="stylesheet" type="text/css" href="index.css"> -->
+
+    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+         
+    <script>
+        $(function(){
+            var iosocket = io.connect();
+  
+            iosocket.on('connect', function () {
+                alert('已成功连接到服务器!');
+  
+                iosocket.on('message', function(message) {
+                    showotherMsg(message);
+                });
+                iosocket.on('disconnect', function() {
+                    alert('连接已断开！');
+                });
+            });
+  
+            $('#chatMessage').keypress(function(event) {
+                if(event.which == 13) {
+                    event.preventDefault();
+                    if($('#chatMessage').val() == ''){
+                        return false;
+                    }
+                    else {
+                        showSelfMsg($('#chatMessage').val());
+                        iosocket.send($('#chatMessage').val());
+                        $('#chatMessage').val('');
+                    }
+                }
+            });
+
+            $('#sendMsg').click(function(event) {
+                if($('#chatMessage').val() == ''){
+                    return false;
+                }
+                else {
+                    showSelfMsg($('#chatMessage').val());
+                    iosocket.send($('#chatMessage').val());
+                    $('#chatMessage').val('');
+                }
+            });
+
+            $('#clear').click(function(event){
+                $('.chatBody').empty('');
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="chatBox">
+        <div class="chatHeader">
+            <span id="name">陆小凤</span>
+            <span id='ip'></span>
+            <span id='clear'>清屏</span>
+        </div>
+        <div class="chatBody">
+            <div class="msgContainer left">
+                <span class="msg">久仰久仰</span>
+            </div>
+            <div class="msgContainer right">
+                <span class="msg">幸会幸会</span>
+            </div>
+        </div>
+        <div class="chatFooter">
+            <input type="text" id="chatMessage"> 
+            <input type="button" name="" value="飞鸽传书" id="sendMsg">   
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    function showSelfMsg(context) {
+        $('.chatBody').append('<div class="msgContainer right">'
+                +'<span class="msg">'+ context +'</span>'
+            +'</div>');
+        autoScroll();
+    }
+    function showotherMsg(context) {
+        $('.chatBody').append('<div class="msgContainer left">'
+                +'<span class="msg">'+ context +'</span>'
+            +'</div>');
+        autoScroll();
+    }
+    function autoScroll(){
+        $('.chatBody').scrollTop($('.chatBody')[0].scrollHeight);
+    }
+
+</script>
+</html>
